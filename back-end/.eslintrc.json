@@ -34,6 +34,7 @@
         "import/prefer-default-export": "off",
         "no-console": "off",
         "no-useless-escape": "off",
-        "no-plusplus": "off"
+        "no-plusplus": "off",
+        "max-len": "off"
     }
 }

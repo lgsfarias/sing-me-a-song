@@ -81,3 +81,7 @@ describe('POST /recommendations/:id/downvote', () => {
     expect(response.status).toBe(404);
   });
 });
+
+afterAll(async () => {
+  await prisma.$disconnect();
+});
