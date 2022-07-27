@@ -62,3 +62,23 @@ describe('POST /recommendations/:id/upvote', () => {
     expect(response.status).toBe(404);
   });
 });
+
+describe('POST /recommendations/:id/downvote', () => {
+  it('should return 200 status code when downvote a recommendation', async () => {
+    const recommendation = await createRecommendation();
+    const response = await agent.post(
+      `/recommendations/${recommendation.id}/downvote`,
+    );
+    expect(response.status).toBe(200);
+
+    const recommendationDownvoted = await prisma.recommendation.findFirst({
+      where: { id: recommendation.id },
+    });
+    expect(recommendationDownvoted.score).toBe(-1);
+  });
+
+  it('should return 404 status code when downvote a recommendation that does not exist', async () => {
+    const response = await agent.post('/recommendations/1/downvote');
+    expect(response.status).toBe(404);
+  });
+});
