@@ -1,8 +1,7 @@
-import { faker } from '@faker-js/faker';
 import supertest from 'supertest';
 import { prisma } from '../src/database.js';
 
-import app from './../src/app.js';
+import app from '../src/app.js';
 import { createRecommendation } from './factories/recommendation.factory.js';
 import { recommendationBodyFactory } from './factories/recommendationBody.factory.js';
 import { deleteAllData } from './factories/scenario.factory.js';

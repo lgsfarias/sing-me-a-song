@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
-import { prisma } from "../database.js";
-import { CreateRecommendationData } from "../services/recommendationsService.js";
+import { Prisma } from '@prisma/client';
+import { prisma } from '../database.js';
+import { CreateRecommendationData } from '../services/recommendationsService.js';
 
 async function create(createRecommendationData: CreateRecommendationData) {
   await prisma.recommendation.create({
@@ -10,28 +10,11 @@ async function create(createRecommendationData: CreateRecommendationData) {
 
 interface FindAllWhere {
   score: number;
-  scoreFilter: "lte" | "gt";
-}
-
-function findAll(findAllWhere?: FindAllWhere) {
-  const filter = getFindAllFilter(findAllWhere);
-
-  return prisma.recommendation.findMany({
-    where: filter,
-    orderBy: { id: "desc" },
-    take: 10
-  });
-}
-
-function getAmountByScore(take: number) {
-  return prisma.recommendation.findMany({
-    orderBy: { score: "desc" },
-    take,
-  });
+  scoreFilter: 'lte' | 'gt';
 }
 
 function getFindAllFilter(
-  findAllWhere?: FindAllWhere
+  findAllWhere?: FindAllWhere,
 ): Prisma.RecommendationWhereInput {
   if (!findAllWhere) return {};
 
@@ -40,6 +23,23 @@ function getFindAllFilter(
   return {
     score: { [scoreFilter]: score },
   };
+}
+
+function findAll(findAllWhere?: FindAllWhere) {
+  const filter = getFindAllFilter(findAllWhere);
+
+  return prisma.recommendation.findMany({
+    where: filter,
+    orderBy: { id: 'desc' },
+    take: 10,
+  });
+}
+
+function getAmountByScore(take: number) {
+  return prisma.recommendation.findMany({
+    orderBy: { score: 'desc' },
+    take,
+  });
 }
 
 function find(id: number) {
@@ -54,7 +54,7 @@ function findByName(name: string) {
   });
 }
 
-async function updateScore(id: number, operation: "increment" | "decrement") {
+async function updateScore(id: number, operation: 'increment' | 'decrement') {
   return prisma.recommendation.update({
     where: { id },
     data: {
