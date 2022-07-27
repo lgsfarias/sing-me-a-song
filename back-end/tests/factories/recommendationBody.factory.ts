@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { CreateRecommendationData } from './../../src/services/recommendationsService.js';
+import { CreateRecommendationData } from '../../src/services/recommendationsService.js';
 export const recommendationBodyFactory = (): CreateRecommendationData => {
   return {
     name: faker.name.firstName(),
