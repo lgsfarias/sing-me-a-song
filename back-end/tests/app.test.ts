@@ -81,3 +81,14 @@ describe('POST /recommendations/:id/downvote', () => {
     expect(response.status).toBe(404);
   });
 });
+
+describe('GET /recommendations', () => {
+  it('should return 200 status code when get all recommendations', async () => {
+    await Promise.all(
+      Array(20).fill(null).map(() => createRecommendation()),
+    );
+    const response = await agent.get('/recommendations');
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(10);
+  });
+});
