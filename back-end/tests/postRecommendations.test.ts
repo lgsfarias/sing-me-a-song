@@ -53,7 +53,7 @@ describe('POST /recommendations/:id/upvote', () => {
     const recommendationUpvoted = await prisma.recommendation.findFirst({
       where: { id: recommendation.id },
     });
-    expect(recommendationUpvoted.score).toBe(1);
+    expect(recommendationUpvoted.score).toBe(recommendation.score + 1);
   });
 
   it('should return 404 status code when upvote a recommendation that does not exist', async () => {
@@ -73,36 +73,11 @@ describe('POST /recommendations/:id/downvote', () => {
     const recommendationDownvoted = await prisma.recommendation.findFirst({
       where: { id: recommendation.id },
     });
-    expect(recommendationDownvoted.score).toBe(-1);
+    expect(recommendationDownvoted.score).toBe(recommendation.score - 1);
   });
 
   it('should return 404 status code when downvote a recommendation that does not exist', async () => {
     const response = await agent.post('/recommendations/1/downvote');
-    expect(response.status).toBe(404);
-  });
-});
-
-describe('GET /recommendations', () => {
-  it('should return 200 status code when get all recommendations', async () => {
-    await Promise.all(
-      Array(20).fill(null).map(() => createRecommendation()),
-    );
-    const response = await agent.get('/recommendations');
-    expect(response.status).toBe(200);
-    expect(response.body.length).toBe(10);
-  });
-});
-
-describe('GET /recommendations/:id', () => {
-  it('should return 200 status code when get a recommendation', async () => {
-    const recommendation = await createRecommendation();
-    const response = await agent.get(`/recommendations/${recommendation.id}`);
-    expect(response.status).toBe(200);
-    expect(response.body.id).toBe(recommendation.id);
-  });
-
-  it('should return 404 status code when get a recommendation that does not exist', async () => {
-    const response = await agent.get('/recommendations/1');
     expect(response.status).toBe(404);
   });
 });
