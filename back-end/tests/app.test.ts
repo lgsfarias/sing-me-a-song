@@ -92,3 +92,17 @@ describe('GET /recommendations', () => {
     expect(response.body.length).toBe(10);
   });
 });
+
+describe('GET /recommendations/:id', () => {
+  it('should return 200 status code when get a recommendation', async () => {
+    const recommendation = await createRecommendation();
+    const response = await agent.get(`/recommendations/${recommendation.id}`);
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(recommendation.id);
+  });
+
+  it('should return 404 status code when get a recommendation that does not exist', async () => {
+    const response = await agent.get('/recommendations/1');
+    expect(response.status).toBe(404);
+  });
+});
