@@ -190,3 +190,15 @@ describe('downvote tests', () => {
     expect(remove).toBeCalled();
   });
 });
+
+describe('get tests', () => {
+  it('shold call findAll function', async () => {
+    const findAll = jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockImplementationOnce((): any => {});
+
+    await recommendationService.get();
+
+    expect(findAll).toBeCalled();
+  });
+});
