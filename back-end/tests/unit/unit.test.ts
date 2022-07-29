@@ -86,3 +86,37 @@ describe('getByIdOrFail tests', () => {
     expect(promise).rejects.toEqual(notFoundError());
   });
 });
+
+describe('upvote tests', () => {
+  it('should upvote a recommendation', async () => {
+    const id = +faker.datatype.uuid();
+
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => ({
+        id,
+        name: faker.random.word(),
+        youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+        score: 0,
+      }));
+
+    const updateScore = jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockImplementationOnce((): any => {});
+
+    await recommendationService.upvote(id);
+    expect(updateScore).toHaveBeenCalled();
+  });
+
+  it('should throw an error if the recommendation does not exist', async () => {
+    const id = +faker.datatype.uuid();
+    const find = jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => null);
+
+    const promise = recommendationService.upvote(id);
+
+    expect(find).toHaveBeenCalled();
+    expect(promise).rejects.toEqual(notFoundError());
+  });
+});
