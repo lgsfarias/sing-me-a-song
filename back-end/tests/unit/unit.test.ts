@@ -54,3 +54,35 @@ describe('insert tests', () => {
     );
   });
 });
+
+describe('getByIdOrFail tests', () => {
+  it('should return a recommendation', async () => {
+    const id = +faker.datatype.uuid();
+    const recommendation = {
+      id,
+      name: faker.random.word(),
+      youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+      score: 0,
+    };
+    const find = jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => recommendation);
+
+    const receivedRecommendation = await recommendationService.getById(id);
+
+    expect(find).toHaveBeenCalled();
+    expect(receivedRecommendation).toEqual(recommendation);
+  });
+
+  it('should throw an error if the recommendation does not exist', async () => {
+    const id = +faker.datatype.uuid();
+    const find = jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => null);
+
+    const promise = recommendationService.getById(id);
+
+    expect(find).toHaveBeenCalled();
+    expect(promise).rejects.toEqual(notFoundError());
+  });
+});
