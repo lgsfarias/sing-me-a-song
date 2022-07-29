@@ -120,3 +120,73 @@ describe('upvote tests', () => {
     expect(promise).rejects.toEqual(notFoundError());
   });
 });
+
+describe('downvote tests', () => {
+  it('should throw an error if the recommendation does not exist', async () => {
+    const id = +faker.datatype.uuid();
+    const find = jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => null);
+
+    const promise = recommendationService.downvote(id);
+
+    expect(find).toHaveBeenCalled();
+    expect(promise).rejects.toEqual(notFoundError());
+  });
+
+  it('should downvote a recommendation', async () => {
+    const id = +faker.datatype.uuid();
+
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => ({
+        id,
+        name: faker.random.word(),
+        youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+        score: 0,
+      }));
+
+    const updateScore = jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockImplementationOnce((): any => ({
+        id,
+        name: faker.random.word(),
+        youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+        score: faker.datatype.number({ min: -4, max: 50 }),
+      }));
+
+    await recommendationService.downvote(id);
+    expect(updateScore).toHaveBeenCalled();
+  });
+
+  it('should remove a recommendation when its score is lower than -5', async () => {
+    const id = +faker.datatype.uuid();
+
+    jest
+      .spyOn(recommendationRepository, 'find')
+      .mockImplementationOnce((): any => ({
+        id,
+        name: faker.random.word(),
+        youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+        score: 0,
+      }));
+
+    const updateScore = jest
+      .spyOn(recommendationRepository, 'updateScore')
+      .mockImplementationOnce((): any => ({
+        id,
+        name: faker.random.word(),
+        youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+        score: -6,
+      }));
+
+    const remove = jest
+      .spyOn(recommendationRepository, 'remove')
+      .mockImplementationOnce((): any => {});
+
+    await recommendationService.downvote(id);
+
+    expect(updateScore).toBeCalled();
+    expect(remove).toBeCalled();
+  });
+});
