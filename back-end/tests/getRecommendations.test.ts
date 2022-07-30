@@ -1,6 +1,9 @@
 import supertest from 'supertest';
 import app from '../src/app.js';
-import { createManyRecommendations, createRecommendation } from './factories/recommendation.factory.js';
+import {
+  createManyRecommendations,
+  createRecommendation,
+} from './factories/recommendation.factory.js';
 import { deleteAllData } from './factories/scenario.factory.js';
 import { prisma } from '../src/database.js';
 import { amountFactory } from './factories/amount.factory.js';
@@ -52,8 +55,6 @@ describe('GET /recommendations/random', () => {
     const response = await agent.get('/recommendations/random');
     expect(response.status).toBe(404);
   });
-
-  // TODO: test if random recommendation meets the statistical requirements
 });
 
 describe('GET /recommendations/top/:amount', () => {
@@ -69,7 +70,6 @@ describe('GET /recommendations/top/:amount', () => {
     await createManyRecommendations(20);
     const amount = amountFactory(20);
     const response = await agent.get(`/recommendations/top/${amount}`);
-    console.log(response.body);
     let isOrdered = true;
     for (let i = 0; i < response.body.length - 1; i++) {
       if (response.body[i].score < response.body[i + 1].score) {
