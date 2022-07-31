@@ -1,3 +1,20 @@
+/// <reference types="cypress" />
+
+Cypress.Commands.add('resetDatabase', () => {
+  cy.request('POST', 'http://localhost:5000/tests/reset-database')
+    .as('resetDatabase')
+    .then(() => {});
+});
+
+Cypress.Commands.add('addRecommendation', (name, url) => {
+  cy.get('input[placeholder="Name"]').type(name);
+  cy.get('[placeholder="https://youtu.be/..."]').type(url);
+
+  cy.intercept('POST', '/recommendations').as('postRecommendation');
+  cy.get('.sc-jSMfEi').click();
+  cy.wait('@postRecommendation');
+});
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
