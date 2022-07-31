@@ -1,5 +1,8 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 import { jest } from '@jest/globals';
 import { faker } from '@faker-js/faker';
+// import { PrismaPromise, Recommendation } from '@prisma/client';
 import {
   recommendationService,
   CreateRecommendationData,
@@ -200,5 +203,114 @@ describe('get tests', () => {
     await recommendationService.get();
 
     expect(findAll).toBeCalled();
+  });
+});
+
+describe('getTop tests', () => {
+  it('should call getAmountByScore', async () => {
+    const amount = faker.datatype.number({ min: 1, max: 10 });
+    const getAmountByScore = jest
+      .spyOn(recommendationRepository, 'getAmountByScore')
+      .mockImplementationOnce((): any => {});
+
+    await recommendationService.getTop(amount);
+
+    expect(getAmountByScore).toBeCalled();
+  });
+});
+
+describe('getRandom tests', () => {
+  it('random < 0.7', async () => {
+    const random = jest
+      .spyOn(Math, 'random')
+      .mockImplementationOnce((): any =>
+        faker.datatype.float({ min: 0, max: 0.6, precision: 0.1 }),
+      );
+
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockImplementationOnce((): any => [
+        {
+          id: 1,
+          name: faker.random.word(),
+          youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+          score: faker.datatype.number({ min: 11, max: 50 }),
+        },
+        {
+          id: 2,
+          name: faker.random.word(),
+          youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+          score: faker.datatype.number({ min: 11, max: 50 }),
+        },
+      ]);
+
+    const result = await recommendationService.getRandom();
+
+    expect(result.id).toBeDefined();
+    expect(result.name).toBeDefined();
+    expect(result.youtubeLink).toBeDefined();
+    expect(result.score).toBeDefined();
+    expect(result.score).toBeGreaterThan(10);
+    expect(random).toBeCalled();
+  });
+
+  it('random >= 0.7', async () => {
+    const random = jest
+      .spyOn(Math, 'random')
+      .mockImplementationOnce((): any =>
+        faker.datatype.float({ min: 0.7, max: 1, precision: 0.1 }),
+      );
+
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockImplementationOnce((): any => [
+        {
+          id: 1,
+          name: faker.random.word(),
+          youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+          score: faker.datatype.number({ min: -4, max: 10 }),
+        },
+        {
+          id: 2,
+          name: faker.random.word(),
+          youtubeLink: `https://www.youtube.com/watch?v=${faker.random.alpha()}`,
+          score: faker.datatype.number({ min: -4, max: 10 }),
+        },
+      ]);
+
+    const result = await recommendationService.getRandom();
+
+    expect(result.id).toBeDefined();
+    expect(result.name).toBeDefined();
+    expect(result.youtubeLink).toBeDefined();
+    expect(result.score).toBeDefined();
+    expect(result.score).toBeLessThanOrEqual(10);
+    expect(random).toBeCalled();
+  });
+
+  it('notFoundError when get recommendations', async () => {
+    const random = jest
+      .spyOn(Math, 'random')
+      .mockImplementationOnce((): any =>
+        faker.datatype.float({ min: 0, max: 1, precision: 0.1 }),
+      );
+    jest
+      .spyOn(recommendationRepository, 'findAll')
+      .mockImplementation((): any => []);
+    const promise = recommendationService.getRandom();
+    expect(random).toBeCalled();
+    expect(promise).rejects.toEqual(notFoundError());
+  });
+});
+
+describe('reset database tests', () => {
+  it('should call resetDatabase', async () => {
+    const resetDatabase = jest
+      .spyOn(recommendationRepository, 'resetDatabase')
+      .mockImplementationOnce((): any => {});
+
+    await recommendationService.resetDatabase();
+
+    expect(resetDatabase).toBeCalled();
   });
 });
