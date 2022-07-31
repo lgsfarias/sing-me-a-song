@@ -8,7 +8,9 @@ async function insert(createRecommendationData: CreateRecommendationData) {
   const existingRecommendation = await recommendationRepository.findByName(
     createRecommendationData.name,
   );
-  if (existingRecommendation) { throw conflictError('Recommendations names must be unique'); }
+  if (existingRecommendation) {
+    throw conflictError('Recommendations names must be unique');
+  }
 
   await recommendationRepository.create(createRecommendationData);
 }
@@ -80,6 +82,10 @@ async function getRandom() {
   return recommendations[randomIndex];
 }
 
+async function resetDatabase() {
+  await recommendationRepository.resetDatabase();
+}
+
 export const recommendationService = {
   insert,
   upvote,
@@ -88,4 +94,5 @@ export const recommendationService = {
   get,
   getById: getByIdOrFail,
   getTop,
+  resetDatabase,
 };
