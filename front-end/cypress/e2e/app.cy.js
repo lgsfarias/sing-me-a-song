@@ -5,6 +5,7 @@ const URL = 'http://localhost:3000/';
 
 describe('app test', () => {
   beforeEach(() => {
+    cy.resetDatabase();
     cy.visit(URL);
   });
 
@@ -24,18 +25,18 @@ describe('app test', () => {
   });
 
   it('should add a recommendation', () => {
-    cy.get('input[placeholder="Name"]').type('Michael Jackson');
-    cy.get('[placeholder="https://youtu.be/..."]').type(
+    cy.addRecommendation(
+      'Michael Jackson',
       'https://www.youtube.com/watch?v=Hxgo-Qu-ZZE',
     );
-
-    cy.intercept('POST', '/recommendations').as('postRecommendation');
-    cy.get('.sc-jSMfEi').click();
-    cy.wait('@postRecommendation');
     cy.get('div.sc-iBkjds.dSsckR').should('contain', 'Michael Jackson');
   });
 
   it('should upvote a recommendation', () => {
+    cy.addRecommendation(
+      'Michael Jackson',
+      'https://www.youtube.com/watch?v=Hxgo-Qu-ZZE',
+    );
     cy.intercept('POST', '/recommendations/1/upvote').as(
       'upvoteRecommendation',
     );
@@ -45,11 +46,15 @@ describe('app test', () => {
   });
 
   it('should downvote a recommendation', () => {
+    cy.addRecommendation(
+      'Michael Jackson',
+      'https://www.youtube.com/watch?v=Hxgo-Qu-ZZE',
+    );
     cy.intercept('POST', '/recommendations/1/downvote').as(
       'downvoteRecommendation',
     );
     cy.get('div.sc-iBkjds.dSsckR svg:last').click();
     cy.wait('@downvoteRecommendation');
-    cy.get('div.sc-iBkjds.dSsckR').should('contain', '0');
+    cy.get('div.sc-iBkjds.dSsckR').should('contain', '-1');
   });
 });
