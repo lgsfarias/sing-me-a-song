@@ -57,4 +57,16 @@ describe('app test', () => {
     cy.wait('@downvoteRecommendation');
     cy.get('div.sc-iBkjds.dSsckR').should('contain', '-1');
   });
+
+  it('should open alert when input is not typed', () => {
+    cy.get('input[placeholder="Name"]').type('teste');
+
+    cy.intercept('POST', '/recommendations').as('postRecommendation');
+    cy.get('.sc-jSMfEi').click();
+    cy.wait('@postRecommendation');
+
+    cy.on('window:alert', (str) => {
+      expect(str).to.equal('Error creating recommendation!');
+    });
+  });
 });
